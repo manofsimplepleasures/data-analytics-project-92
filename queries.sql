@@ -99,10 +99,10 @@ day_of_the_week_income
 	далее вывожу нужные поля, сортирую по порядковому номеру дня недели и seller
 	WITH seller_income AS 
 			(SELECT 
-		        CONCAT(e.first_name, ' ', e.last_name) AS seller,
-		        FLOOR(SUM(p.price * s.quantity)) AS income,
-	            EXTRACT(DOW FROM s.sale_date) AS day_number,
-	            TO_CHAR(s.sale_date, 'Day') AS day_of_week
+		    CONCAT(e.first_name, ' ', e.last_name) AS seller,
+		    FLOOR(SUM(p.price * s.quantity)) AS income,
+	        TO_CHAR(s.sale_date, 'ID') AS day_number,
+			TO_CHAR(s.sale_date, 'Day') AS day_of_week
 		    FROM sales s
 		    JOIN employees e ON s.sales_person_id = e.employee_id
 		    JOIN products p ON s.product_id = p.product_id
