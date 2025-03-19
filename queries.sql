@@ -84,3 +84,30 @@ lowest_average_income
 	FROM seller_avg_income 
 	JOIN overall_avg_income ON seller_avg_income.average_income < overall_avg_income.avg_income
 	ORDER BY seller_avg_income.average_income ASC;	
+	
+day_of_the_week_income
+
+	считаю и округляю выручку /продавца
+	FLOOR(SUM(p.price * s.quantity)) AS income
+	
+	извлекаю из sale_date номер дня недели в формате ISO (понедельник = 1, воскресенье = 7)
+	извлекаю название дня недели
+	TO_CHAR(s.sale_date, 'ID') AS day_number,
+	TO_CHAR(s.sale_date, 'Day') AS day_of_week
+	 
+	с помощью WITH seller_income AS получаю и группирую данные по выручке, по каждому продавцу и дню недели.
+	далее вывожу нужные поля, сортирую по порядковому номеру дня недели и seller
+	WITH seller_income AS 
+			(SELECT 
+		        CONCAT(e.first_name, ' ', e.last_name) AS seller,
+		        FLOOR(SUM(p.price * s.quantity)) AS income,
+	            EXTRACT(DOW FROM s.sale_date) AS day_number,
+	            TO_CHAR(s.sale_date, 'Day') AS day_of_week
+		    FROM sales s
+		    JOIN employees e ON s.sales_person_id = e.employee_id
+		    JOIN products p ON s.product_id = p.product_id
+		    GROUP BY seller, sale_date)
+		SELECT seller, day_of_week, income
+		FROM seller_income 
+		GROUP by seller,day_of_week,day_number,income
+		ORDER BY day_number, income;
