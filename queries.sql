@@ -1,9 +1,9 @@
-/* считает общее количество покупателей в таблице customers*/
+/* общее кол-во покупателей в таблице customers*/
 SELECT COUNT(DISTINCT customer_id) AS customers_count
 FROM customers;
 
-/* выводит данные продавца, суммарной выручки с проданных товаров
-и количество проведенных сделок.Сортирует по убыванию выручки*/
+/* данные продавца, суммарной выручки с проданных товаров
+и количество проведенных сделок*/
 SELECT
     CONCAT(e.first_name, ' ', e.last_name) AS seller,
     COUNT(s.sales_id) AS operations,
@@ -20,8 +20,7 @@ ORDER BY
     income DESC
 LIMIT 10;
 
-/* выводит данные инфy о продавцах, чья средняя выручка за сделку < средней выручки за сделку по всем продавцам.
- сортирует по выручке, по возрастанию.*/
+/* инфо о продавцах, чья средняя выручка за сделку < средней выручки за сделку по всем продавцам.*/
 WITH seller_avg_income AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
@@ -45,8 +44,7 @@ INNER JOIN
     ON seller_avg_income.average_income < overall_avg_income.avg_income
 ORDER BY seller_avg_income.average_income ASC;
 
-/*выводит инфу о выручке по дням недели. содержит имя,фамилию продавца, день недели и суммарную выручку. 
- сортирует данные по порядковому номеру дня недели и seller*/
+/*инфа о выручке по дням недели. содержит имя,фамилию продавца, день недели и суммарную выручку*/
 WITH seller_income AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
@@ -66,4 +64,20 @@ SELECT
 FROM seller_income
 GROUP BY seller, day_of_week, day_number, income
 ORDER BY day_number, income;
+
+/*кол-во покупателей в разных возрастных группах*/
+SELECT
+    CASE
+        WHEN age BETWEEN 16 AND 25 THEN '16-25'
+        WHEN age BETWEEN 26 AND 40 THEN '26-40'
+        ELSE '40+'
+    END AS age_category,
+    COUNT(*) AS age_count
+FROM
+    customers
+GROUP BY
+    age_category
+ORDER BY
+    age_category;
+
 
