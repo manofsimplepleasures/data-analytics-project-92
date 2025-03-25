@@ -95,10 +95,8 @@ WITH info AS (
 SELECT
     TO_CHAR(sale_date, 'YYYY-MM') AS date,
     COUNT(DISTINCT customer_id) AS total_customers,
-    SUM(quantity * price)
+    FLOOR(SUM(quantity * price)) AS income
 FROM info
 GROUP BY TO_CHAR(sale_date, 'YYYY-MM')
 ORDER BY date;
-
-
 
