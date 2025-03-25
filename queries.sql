@@ -80,4 +80,25 @@ GROUP BY
 ORDER BY
     age_category;
 
+/*данные по кол-ву уникальных покупателей и выручке, которую они принесли*/
+WITH info AS (
+    SELECT
+        s.sale_date,
+        s.customer_id,
+        s.quantity,
+        p.price
+    FROM sales AS s
+    LEFT JOIN customers AS c ON s.customer_id = c.customer_id
+    LEFT JOIN products AS p ON s.product_id = p.product_id
+)
+
+SELECT
+    TO_CHAR(sale_date, 'YYYY-MM') AS date,
+    COUNT(DISTINCT customer_id) AS total_customers,
+    SUM(quantity * price)
+FROM info
+GROUP BY TO_CHAR(sale_date, 'YYYY-MM')
+ORDER BY date;
+
+
 
