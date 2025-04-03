@@ -61,7 +61,17 @@ SELECT
     day_of_week,
     income
 FROM seller_income
-ORDER BY day_of_week ASC, income DESC;
+ORDER BY
+    seller ASC,
+    CASE day_of_week
+        WHEN 'monday' THEN 1
+        WHEN 'tuesday' THEN 2
+        WHEN 'wednesday' THEN 3
+        WHEN 'thursday' THEN 4
+        WHEN 'friday' THEN 5
+        WHEN 'saturday' THEN 6
+        WHEN 'sunday' THEN 7
+    END ASC;
 
 
 /*кол-во покупателей в разных возрастных группах*/
