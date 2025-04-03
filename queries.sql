@@ -49,12 +49,11 @@ WITH seller_income AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
         LOWER(TRIM(TO_CHAR(s.sale_date, 'Day'))) AS day_of_week,
-        TO_CHAR(s.sale_date, 'ID') AS day_number,
         FLOOR(SUM(p.price * s.quantity)) AS income
     FROM sales AS s
     INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
     INNER JOIN products AS p ON s.product_id = p.product_id
-    GROUP BY seller, day_of_week, day_number
+    GROUP BY seller, day_of_week
 )
 
 SELECT
@@ -62,7 +61,7 @@ SELECT
     day_of_week,
     income
 FROM seller_income
-ORDER BY day_number::int, income DESC;
+ORDER BY day_of_week ASC, income DESC;
 
 
 /*кол-во покупателей в разных возрастных группах*/
