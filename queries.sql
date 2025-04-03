@@ -48,7 +48,7 @@ ORDER BY seller_avg_income.average_income ASC;
 WITH seller_income AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        TO_CHAR(s.sale_date, 'Day') AS day_of_week,
+        LOWER(TRIM(TO_CHAR(s.sale_date, 'Day'))) AS day_of_week,
         TO_CHAR(s.sale_date, 'ID') AS day_number,
         FLOOR(SUM(p.price * s.quantity)) AS income
     FROM sales AS s
