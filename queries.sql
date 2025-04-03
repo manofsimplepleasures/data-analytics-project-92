@@ -48,7 +48,7 @@ ORDER BY seller_avg_income.average_income ASC;
 WITH seller_income AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        LOWER(TRIM(TO_CHAR(s.sale_date, 'Day'))) AS day_of_week,
+        LOWER(TO_CHAR(s.sale_date, 'FMDay')) AS day_of_week,
         FLOOR(SUM(p.price * s.quantity)) AS income
     FROM sales AS s
     INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
@@ -72,7 +72,6 @@ ORDER BY
         WHEN 'saturday' THEN 6
         WHEN 'sunday' THEN 7
     END ASC;
-
 
 /*кол-во покупателей в разных возрастных группах*/
 SELECT
