@@ -137,4 +137,6 @@ SELECT
 FROM promo_first_buyers AS pfb
 INNER JOIN customers AS c ON pfb.customer_id = c.customer_id
 INNER JOIN employees AS e ON pfb.sales_person_id = e.employee_id
-ORDER BY pfb.sale_date, customer;
+ORDER BY
+    pfb.sale_date,
+    customer;
