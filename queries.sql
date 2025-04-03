@@ -92,12 +92,12 @@ WITH info AS (
 )
 
 SELECT
-    TO_CHAR(sale_date, 'YYYY-MM') AS date,
+    TO_CHAR(sale_date, 'YYYY-MM') AS selling_month,
     COUNT(DISTINCT customer_id) AS total_customers,
     FLOOR(SUM(quantity * price)) AS income
 FROM info
 GROUP BY TO_CHAR(sale_date, 'YYYY-MM')
-ORDER BY date;
+ORDER BY selling_month;
 
 /* покупатели с 1-ой покупкой во время акции*/
 WITH first_buy AS (
