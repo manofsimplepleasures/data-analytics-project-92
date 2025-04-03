@@ -48,22 +48,21 @@ ORDER BY seller_avg_income.average_income ASC;
 WITH seller_income AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        LOWER(TRIM(TO_CHAR(s.sale_date, 'FMDay'))) AS day_of_week,
+        LOWER(TO_CHAR(s.sale_date, 'Day')) AS day_of_week,
         FLOOR(SUM(p.price * s.quantity)) AS income
     FROM sales AS s
-    INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
-    INNER JOIN products AS p ON s.product_id = p.product_id
+    JOIN employees AS e ON s.sales_person_id = e.employee_id
+    JOIN products AS p ON s.product_id = p.product_id
     GROUP BY seller, day_of_week
 )
-
 SELECT
     seller,
-    day_of_week,
+    TRIM(day_of_week) AS day_of_week,
     income
 FROM seller_income
 ORDER BY
-    seller ASC,
-    CASE day_of_week
+    seller,
+    CASE TRIM(day_of_week)
         WHEN 'monday' THEN 1
         WHEN 'tuesday' THEN 2
         WHEN 'wednesday' THEN 3
@@ -71,7 +70,7 @@ ORDER BY
         WHEN 'friday' THEN 5
         WHEN 'saturday' THEN 6
         WHEN 'sunday' THEN 7
-    END ASC;
+    END;
 /*кол-во покупателей в разных возрастных группах*/
 SELECT
     CASE
@@ -117,9 +116,10 @@ WITH first_sale_date AS (
 ),
 
 promo_first_buyers AS (
-    SELECT DISTINCT
+    SELECT
         s.customer_id,
-        s.sale_date
+        s.sale_date,
+        s.sales_person_id
     FROM sales AS s
     INNER JOIN products AS p ON s.product_id = p.product_id
     INNER JOIN first_sale_date AS fsd
@@ -127,13 +127,11 @@ promo_first_buyers AS (
     WHERE p.price = 0
 )
 
-SELECT DISTINCT
-    CONCAT(c.first_name, ' ', c.last_name) AS customer,
+SELECT
+    DISTINCT CONCAT(c.first_name, ' ', c.last_name) AS customer,
     pfb.sale_date,
     CONCAT(e.first_name, ' ', e.last_name) AS seller
 FROM promo_first_buyers AS pfb
-INNER JOIN sales AS s
-    ON pfb.customer_id = s.customer_id AND pfb.sale_date = s.sale_date
 INNER JOIN customers AS c ON pfb.customer_id = c.customer_id
-INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
+INNER JOIN employees AS e ON pfb.sales_person_id = e.employee_id
 ORDER BY pfb.sale_date, customer;
