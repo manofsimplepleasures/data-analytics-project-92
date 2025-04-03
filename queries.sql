@@ -124,23 +124,18 @@ promo_first_buyers AS (
         s.sale_date
     FROM sales AS s
     INNER JOIN products AS p ON s.product_id = p.product_id
-    INNER JOIN
-        first_sale_date AS fsd
+    INNER JOIN first_sale_date AS fsd
         ON s.customer_id = fsd.customer_id AND s.sale_date = fsd.sale_date
     WHERE p.price = 0
 )
 
-SELECT
-    s.sale_date,
+SELECT DISTINCT
+    pfb.sale_date,
     CONCAT(c.first_name, ' ', c.last_name) AS customer,
     CONCAT(e.first_name, ' ', e.last_name) AS seller
 FROM promo_first_buyers AS pfb
-INNER JOIN
-    sales AS s
+INNER JOIN sales AS s
     ON pfb.customer_id = s.customer_id AND pfb.sale_date = s.sale_date
 INNER JOIN customers AS c ON pfb.customer_id = c.customer_id
 INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
-ORDER BY c.customer_id;
-
-
-
+ORDER BY pfb.sale_date, customer;
