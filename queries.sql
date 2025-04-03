@@ -51,14 +51,15 @@ WITH seller_income AS (
         LOWER(TO_CHAR(s.sale_date, 'Day')) AS day_of_week,
         FLOOR(SUM(p.price * s.quantity)) AS income
     FROM sales AS s
-    JOIN employees AS e ON s.sales_person_id = e.employee_id
-    JOIN products AS p ON s.product_id = p.product_id
+    INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
+    INNER JOIN products AS p ON s.product_id = p.product_id
     GROUP BY seller, day_of_week
 )
+
 SELECT
     seller,
-    TRIM(day_of_week) AS day_of_week,
-    income
+    income,
+    TRIM(day_of_week) AS day_of_week
 FROM seller_income
 ORDER BY
     seller,
@@ -70,7 +71,9 @@ ORDER BY
         WHEN 'friday' THEN 5
         WHEN 'saturday' THEN 6
         WHEN 'sunday' THEN 7
-    END;
+    END,
+    seller;
+
 /*кол-во покупателей в разных возрастных группах*/
 SELECT
     CASE
