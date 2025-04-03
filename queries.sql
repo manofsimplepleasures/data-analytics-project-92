@@ -100,28 +100,37 @@ GROUP BY TO_CHAR(sale_date, 'YYYY-MM')
 ORDER BY selling_month;
 
 /* покупатели с 1-ой покупкой во время акции*/
-WITH first_buy AS (
+WITH first_sale_date AS (
     SELECT
+        customer_id,
+        MIN(sale_date) AS sale_date
+    FROM sales
+    GROUP BY customer_id
+),
+
+promo_first_buyers AS (
+    SELECT DISTINCT
         s.customer_id,
-        MIN(s.sale_date) AS first_sale_date
+        s.sale_date
     FROM sales AS s
     INNER JOIN products AS p ON s.product_id = p.product_id
+    INNER JOIN
+        first_sale_date AS fsd
+        ON s.customer_id = fsd.customer_id AND s.sale_date = fsd.sale_date
     WHERE p.price = 0
-    GROUP BY s.customer_id
 )
 
 SELECT
     s.sale_date,
     CONCAT(c.first_name, ' ', c.last_name) AS customer,
     CONCAT(e.first_name, ' ', e.last_name) AS seller
-FROM first_buy AS fb
+FROM promo_first_buyers AS pfb
 INNER JOIN
     sales AS s
-    ON fb.customer_id = s.customer_id AND fb.first_sale_date = s.sale_date
-INNER JOIN products AS p ON s.product_id = p.product_id AND p.price = 0
-INNER JOIN customers AS c ON fb.customer_id = c.customer_id
+    ON pfb.customer_id = s.customer_id AND pfb.sale_date = s.sale_date
+INNER JOIN customers AS c ON pfb.customer_id = c.customer_id
 INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
-ORDER BY fb.customer_id;
+ORDER BY c.customer_id;
 
 
 
