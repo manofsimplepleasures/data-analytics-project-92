@@ -58,11 +58,10 @@ WITH seller_income AS (
 
 SELECT
     seller,
-    income,
-    TRIM(day_of_week) AS day_of_week
+    TRIM(day_of_week) AS day_of_week,  -- Сначала day_of_week
+    income                               -- Потом income
 FROM seller_income
 ORDER BY
-    seller,
     CASE TRIM(day_of_week)
         WHEN 'monday' THEN 1
         WHEN 'tuesday' THEN 2
@@ -124,19 +123,17 @@ promo_first_buyers AS (
         s.sale_date,
         s.sales_person_id
     FROM sales AS s
-    INNER JOIN products AS p ON s.product_id = p.product_id
-    INNER JOIN first_sale_date AS fsd
-        ON s.customer_id = fsd.customer_id AND s.sale_date = fsd.sale_date
+    JOIN products AS p ON s.product_id = p.product_id
+    JOIN first_sale_date fsd ON s.customer_id = fsd.customer_id
+                             AND s.sale_date = fsd.sale_date
     WHERE p.price = 0
 )
 
 SELECT
-    DISTINCT CONCAT(c.first_name, ' ', c.last_name) AS customer,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer,
     pfb.sale_date,
     CONCAT(e.first_name, ' ', e.last_name) AS seller
-FROM promo_first_buyers AS pfb
-INNER JOIN customers AS c ON pfb.customer_id = c.customer_id
-INNER JOIN employees AS e ON pfb.sales_person_id = e.employee_id
-ORDER BY
-    pfb.sale_date,
-    customer;
+FROM promo_first_buyers pfb
+JOIN customers c ON pfb.customer_id = c.customer_id
+JOIN employees e ON pfb.sales_person_id = e.employee_id
+ORDER BY pfb.customer_id;
